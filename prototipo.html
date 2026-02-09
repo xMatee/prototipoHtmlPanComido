@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Prototipo – Pedidos + Producción + Recetas</title>
+  <style>
+    :root { --radius: 14px; --pad: 14px; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background:#f6f7fb; color:#111; }
+    header { position: sticky; top:0; background:#fff; border-bottom:1px solid #e8e9f0; padding: 14px 18px; display:flex; gap:14px; align-items:center; z-index:10;}
+    header h1 { font-size: 16px; margin:0; font-weight:700; }
+    header .meta { font-size: 12px; color:#666; margin-left:auto; display:flex; gap:10px; align-items:center; }
+    main { max-width: 1200px; margin: 18px auto; padding: 0 14px 60px; display:grid; grid-template-columns: 260px 1fr; gap: 14px; }
+    nav { background:#fff; border:1px solid #e8e9f0; border-radius: var(--radius); padding: 10px; height: fit-content; position: sticky; top:64px;}
+    .navbtn { width:100%; border:0; background:transparent; text-align:left; padding:10px 10px; border-radius: 10px; cursor:pointer; font-weight:600; }
+    .navbtn:hover { background:#f2f3f8; }
+    .navbtn.active { background:#111; color:#fff; }
+    .card { background:#fff; border:1px solid #e8e9f0; border-radius: var(--radius); padding: var(--pad); }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    label { display:block; font-size: 12px; color:#555; margin-bottom: 6px; }
+    input, select, textarea { width:100%; padding: 10px 10px; border:1px solid #dfe1ee; border-radius: 10px; outline:none; background:#fff; }
+    textarea { min-height: 88px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color:#111; }
+    .btnbar { display:flex; gap:10px; flex-wrap: wrap; }
+    button.primary { border:0; background:#111; color:#fff; padding: 10px 12px; border-radius: 10px; font-weight:700; cursor:pointer; }
+    button.secondary { border:1px solid #dfe1ee; background:#fff; padding: 10px 12px; border-radius: 10px; font-weight:700; cursor:pointer; }
+    button.danger { border:0; background:#c62828; color:#fff; padding: 10px 12px; border-radius: 10px; font-weight:700; cursor:pointer; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .muted { color:#666; font-size: 12px; }
+    .title { display:flex; align-items:center; justify-content: space-between; gap:10px; margin-bottom: 10px; }
+    .title h2 { margin:0; font-size: 15px; }
+    .pill { font-size: 11px; padding: 4px 8px; border-radius: 999px; border:1px solid #e8e9f0; background:#fafbff; color:#333; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom:1px solid #eef0f6; text-align:left; font-size: 13px; }
+    th { font-size: 12px; color:#555; font-weight:700; }
+    .kpi { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .kpi .box { border:1px solid #eef0f6; border-radius: 12px; padding: 10px; background:#fcfcff; }
+    .kpi .n { font-size: 18px; font-weight: 800; }
+    .kpi .l { font-size: 11px; color:#666; }
+    .split { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .right { text-align:right; }
+    .hidden { display:none !important; }
+    .hr { height:1px; background:#eef0f6; margin: 12px 0; }
+    .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; background:#f2f3f8; border:1px solid #e8e9f0; display:inline-block; }
+    .state { font-weight:700; }
+    .toast { position: fixed; bottom: 16px; right: 16px; background:#111; color:#fff; padding: 10px 12px; border-radius: 12px; font-size: 13px; opacity:0; transform: translateY(6px); transition: .2s; }
+    .toast.show { opacity:1; transform: translateY(0); }
+    @media (max-width: 980px){
+      main { grid-template-columns: 1fr; }
+      nav { position: relative; top:0; }
+      .kpi { grid-template-columns: 1fr 1fr; }
+      .row, .row3, .split { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🥖 Sistema de Pedidos & Producción (Prototipo)</h1>
+  <div class="meta">
+    <span class="pill" id="sessionUser">Usuario: Recepción</span>
+    <span class="pill" id="todayPill"></span>
+  </div>
+</header>
+
+<main>
+  <nav class="card">
+    <button class="navbtn active" data-view="dashboard">📋 Pedidos del día</button>
+    <button class="navbtn" data-view="nuevoPedido">➕ Nuevo pedido</button>
+    <button class="navbtn" data-view="futuros">📆 Pedidos futuros</button>
+    <button class="navbtn" data-view="produccion">🏭 Producción</button>
+    <button class="navbtn" data-view="recetas">🧾 Recetas & Cálculo por harina</button>
+    <div class="hr"></div>
+    <div class="muted">
+      Flujo base:
+      <ol style="margin:8px 0 0 18px; padding:0;">
+        <li>Registrar pedido</li>
+        <li>Ver pedidos del día</li>
+        <li>Consolidar producción</li>
+        <li>Calcular insumos por receta</li>
+        <li>Registrar pagos / estados</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="card">
+    <div class="title">
+      <h2>Pedidos del día</h2>
+      <div class="btnbar">
+        <button class="secondary" id="btnSeed">Cargar ejemplo</button>
+        <button class="primary" id="btnGoNew">+ Nuevo pedido</button>
+      </div>
+    </div>
+
+    <div class="kpi" style="margin-bottom:12px;">
+      <div class="box"><div class="n" id="kpiPedidos">0</div><div class="l">Pedidos hoy</div></div>
+      <div class="box"><div class="n" id="kpiUnidades">0</div><div class="l">Unidades totales</div></div>
+      <div class="box"><div class="n" id="kpiPagos">0</div><div class="l">Pagos registrados</div></div>
+      <div class="box"><div class="n" id="kpiPendientes">0</div><div class="l">Pendientes de pago</div></div>
+    </div>
+
+    <div class="muted" style="margin-bottom:8px;">Ordenados por hora de entrega. Cambiá estado y pagos desde la fila.</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Cliente</th>
+          <th>Detalle</th>
+          <th>Estado</th>
+          <th>Pago</th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tblHoy"></tbody>
+    </table>
+  </section>
+
+  <!-- NUEVO PEDIDO -->
+  <section id="view-nuevoPedido" class="card hidden">
+    <div class="title">
+      <h2>Registrar pedido</h2>
+      <span class="pill">Recepción / Admin</span>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Cliente</label>
+        <select id="clienteSel"></select>
+        <div class="muted" style="margin-top:6px;">Si no está, crealo rápido:</div>
+        <div class="row" style="margin-top:8px;">
+          <input id="cliNombre" placeholder="Nombre cliente" />
+          <button class="secondary" id="btnCrearCliente">Crear</button>
+        </div>
+      </div>
+
+      <div>
+        <label>Fecha y hora de entrega</label>
+        <input type="datetime-local" id="entregaDT" />
+        <div class="muted" style="margin-top:6px;">Si elegís una fecha futura, el pedido va a “Futuros”.</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="title">
+      <h2>Productos</h2>
+      <span class="pill">Detalle del pedido</span>
+    </div>
+
+    <div class="row3">
+      <div>
+        <label>Producto</label>
+        <select id="prodSel"></select>
+      </div>
+      <div>
+        <label>Cantidad</label>
+        <input type="number" id="cantidadIn" min="1" value="1" />
+      </div>
+      <div style="display:flex; align-items:end;">
+        <button class="secondary" id="btnAddItem">+ Agregar</button>
+      </div>
+    </div>
+
+    <table style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cant.</th>
+          <th>Precio unit.</th>
+          <th>Subtotal</th>
+          <th class="right">Quitar</th>
+        </tr>
+      </thead>
+      <tbody id="tblItems"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="right"><strong>Total estimado</strong></td>
+          <td colspan="2"><strong id="totalEst">$ 0</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="hr"></div>
+
+    <label>Observaciones</label>
+    <textarea id="obsIn" placeholder="Ej: sin semillas / entrega por mostrador / etc."></textarea>
+
+    <div class="btnbar" style="margin-top:12px;">
+      <button class="primary" id="btnGuardarPedido">Guardar pedido</button>
+      <button class="secondary" id="btnCancelarPedidoForm">Volver</button>
+    </div>
+  </section>
+
+  <!-- FUTUROS -->
+  <section id="view-futuros" class="card hidden">
+    <div class="title">
+      <h2>Pedidos futuros</h2>
+      <span class="pill">Recepción / Admin</span>
+    </div>
+    <div class="muted" style="margin-bottom:8px;">Se muestran pedidos con fecha posterior a hoy.</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha entrega</th>
+          <th>Cliente</th>
+          <th>Resumen</th>
+          <th>Estado</th>
+          <th>Pago</th>
+        </tr>
+      </thead>
+      <tbody id="tblFuturos"></tbody>
+    </table>
+  </section>
+
+  <!-- PRODUCCIÓN -->
+  <section id="view-produccion" class="card hidden">
+    <div class="title">
+      <h2>Totales de producción (día)</h2>
+      <div class="btnbar">
+        <button class="secondary" id="btnRecalc">Recalcular</button>
+        <button class="primary" id="btnIrRecetas">Ir a recetas →</button>
+      </div>
+    </div>
+    <div class="muted">Consolida los pedidos del día por producto. Esto alimenta el cálculo de insumos.</div>
+    <div class="hr"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Unidad</th>
+          <th>Total del día</th>
+        </tr>
+      </thead>
+      <tbody id="tblProduccion"></tbody>
+    </table>
+  </section>
+
+  <!-- RECETAS -->
+  <section id="view-recetas" class="card hidden">
+    <div class="title">
+      <h2>Recetas & cálculo por harina</h2>
+      <span class="pill">Prototipo de rendimiento</span>
+    </div>
+
+    <div class="split">
+      <div class="card" style="border-radius: var(--radius); border:1px solid #eef0f6;">
+        <div class="title">
+          <h2 style="font-size:14px;">Cargar / editar receta</h2>
+          <span class="tag">Receta (cabecera)</span>
+        </div>
+
+        <label>Nombre</label>
+        <input id="recNombre" placeholder="Ej: Vainitas" />
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>Cantidad base (harina)</label>
+            <input type="number" id="recBase" min="0" step="0.1" placeholder="Ej: 5" />
+            <div class="muted" style="margin-top:6px;">Unidad fija en este prototipo: <strong>kg de harina</strong>.</div>
+          </div>
+          <div>
+            <label>Cantidad salida</label>
+            <input type="number" id="recSalida" min="0" step="1" placeholder="Ej: 50" />
+            <div class="muted" style="margin-top:6px;">Unidad: <strong>unidades</strong> (podés extender luego).</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>Merma (%) (opcional)</label>
+            <input type="number" id="recMerma" min="0" step="0.1" placeholder="Ej: 2.5" />
+          </div>
+          <div>
+            <label>Activa</label>
+            <select id="recActiva">
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btnbar" style="margin-top:12px;">
+          <button class="primary" id="btnGuardarReceta">Guardar receta</button>
+          <button class="secondary" id="btnLimpiarReceta">Limpiar</button>
+        </div>
+
+        <div class="hr"></div>
+        <div class="muted">
+          <strong>Idea del modelo ER:</strong> más adelante, esto se divide en <em>Receta</em> + <em>RecetaIngrediente</em>.
+          Acá dejamos harina como “ingrediente base” para simplificar el flujo.
+        </div>
+      </div>
+
+      <div class="card" style="border-radius: var(--radius); border:1px solid #eef0f6;">
+        <div class="title">
+          <h2 style="font-size:14px;">Calcular con harina disponible</h2>
+          <span class="tag">Cálculo</span>
+        </div>
+
+        <label>Seleccionar receta</label>
+        <select id="recSel"></select>
+
+        <label style="margin-top:10px;">Harina disponible (kg)</label>
+        <input type="number" id="harinaDisp" min="0" step="0.1" placeholder="Ej: 12" />
+
+        <div class="btnbar" style="margin-top:12px;">
+          <button class="primary" id="btnCalcular">Calcular</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div id="resultadoCalc" class="muted">
+          Ingresá harina y una receta para ver el rendimiento estimado.
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="title">
+      <h2>Listado de recetas</h2>
+      <span class="pill">Editable</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Receta</th>
+          <th>Base</th>
+          <th>Salida</th>
+          <th>Merma</th>
+          <th>Activa</th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tblRecetas"></tbody>
+    </table>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ======= Datos (mock) =======
+  const state = {
+    usuarios: [{ usuario_id: 1, nombre: "Recepción", rol: "Recepción", activo: true }],
+    clientes: [
+      { cliente_id: 1, nombre: "Cliente Mostrador", telefono: "", email: "", activo: true },
+      { cliente_id: 2, nombre: "Martín", telefono: "099123123", email: "martin@mail.com", activo: true }
+    ],
+    productos: [
+      { producto_id: 1, nombre: "Vainitas", unidad_medida: "unid", precio_base: 35, activo: true },
+      { producto_id: 2, nombre: "Pan flauta", unidad_medida: "unid", precio_base: 45, activo: true },
+      { producto_id: 3, nombre: "Bizcochos", unidad_medida: "unid", precio_base: 28, activo: true }
+    ],
+    pedidos: [],
+    pagos: [],
+    recetas: [
+      // ejemplo: con 5kg harina => 50 vainitas
+      { receta_id: 1, nombre: "Vainitas", base_kg_harina: 5, salida_unidades: 50, merma_pct: 0, activa: true }
+    ],
+    tmpPedidoItems: []
+  };
+
+  // ======= Utilidades =======
+  const $ = (id) => document.getElementById(id);
+  const fmtMoney = (n) => "$ " + (Math.round(n * 100) / 100).toLocaleString("es-UY");
+  const todayISO = () => {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+  const isSameDay = (a, b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  const toast = (msg) => {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 1600);
+  };
+
+  // ======= Navegación =======
+  function setView(viewName){
+    document.querySelectorAll("section[id^='view-']").forEach(s => s.classList.add("hidden"));
+    $("view-" + viewName).classList.remove("hidden");
+    document.querySelectorAll(".navbtn").forEach(b => b.classList.toggle("active", b.dataset.view === viewName));
+  }
+
+  document.querySelectorAll(".navbtn").forEach(btn => {
+    btn.addEventListener("click", () => setView(btn.dataset.view));
+  });
+
+  $("btnGoNew").addEventListener("click", ()=> setView("nuevoPedido"));
+  $("btnCancelarPedidoForm").addEventListener("click", ()=> setView("dashboard"));
+  $("btnIrRecetas").addEventListener("click", ()=> setView("recetas"));
+
+  // ======= Render select clientes / productos =======
+  function renderSelects(){
+    // clientes
+    const cs = $("clienteSel");
+    cs.innerHTML = "";
+    state.clientes.filter(c=>c.activo).forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value = c.cliente_id;
+      opt.textContent = `${c.nombre}`;
+      cs.appendChild(opt);
+    });
+
+    // productos
+    const ps = $("prodSel");
+    ps.innerHTML = "";
+    state.productos.filter(p=>p.activo).forEach(p=>{
+      const opt = document.createElement("option");
+      opt.value = p.producto_id;
+      opt.textContent = `${p.nombre} (${fmtMoney(p.precio_base)})`;
+      ps.appendChild(opt);
+    });
+
+    // recetas select
+    const rs = $("recSel");
+    rs.innerHTML = "";
+    state.recetas.forEach(r=>{
+      const opt = document.createElement("option");
+      opt.value = r.receta_id;
+      opt.textContent = r.nombre + (r.activa ? "" : " (inactiva)");
+      rs.appendChild(opt);
+    });
+  }
+
+  // ======= Pedido: items =======
+  function addItem(){
+    const producto_id = Number($("prodSel").value);
+    const cantidad = Number($("cantidadIn").value || 0);
+    if(!producto_id || cantidad <= 0) return toast("Cantidad inválida");
+
+    const prod = state.productos.find(p=>p.producto_id===producto_id);
+    const precio = prod.precio_base;
+
+    // si existe, acumula
+    const existing = state.tmpPedidoItems.find(i=>i.producto_id===producto_id);
+    if(existing){
+      existing.cantidad += cantidad;
+      existing.subtotal = existing.cantidad * existing.precio_unitario;
+    } else {
+      state.tmpPedidoItems.push({
+        pedido_detalle_id: Date.now() + Math.floor(Math.random()*1000),
+        producto_id,
+        cantidad,
+        precio_unitario: precio,
+        subtotal: cantidad * precio
+      });
+    }
+    renderItems();
+  }
+
+  function removeItem(pedido_detalle_id){
+    state.tmpPedidoItems = state.tmpPedidoItems.filter(i=>i.pedido_detalle_id!==pedido_detalle_id);
+    renderItems();
+  }
+
+  function renderItems(){
+    const tb = $("tblItems");
+    tb.innerHTML = "";
+    let total = 0;
+    state.tmpPedidoItems.forEach(i=>{
+      const prod = state.productos.find(p=>p.producto_id===i.producto_id);
+      total += i.subtotal;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${prod.nombre}</td>
+        <td>${i.cantidad}</td>
+        <td>${fmtMoney(i.precio_unitario)}</td>
+        <td>${fmtMoney(i.subtotal)}</td>
+        <td class="right"><button class="secondary" data-del="${i.pedido_detalle_id}">Quitar</button></td>
+      `;
+      tb.appendChild(tr);
+    });
+    $("totalEst").textContent = fmtMoney(total);
+
+    tb.querySelectorAll("button[data-del]").forEach(b=>{
+      b.addEventListener("click", ()=>removeItem(Number(b.dataset.del)));
+    });
+  }
+
+  $("btnAddItem").addEventListener("click", addItem);
+
+  // ======= Guardar pedido =======
+  function guardarPedido(){
+    const cliente_id = Number($("clienteSel").value);
+    const entrega = $("entregaDT").value;
+    if(!cliente_id) return toast("Elegí cliente");
+    if(!entrega) return toast("Elegí fecha y hora de entrega");
+    if(state.tmpPedidoItems.length === 0) return toast("Agregá al menos 1 producto");
+
+    const entregaDate = new Date(entrega);
+    const now = new Date();
+    const total = state.tmpPedidoItems.reduce((acc,i)=>acc+i.subtotal,0);
+
+    const pedido = {
+      pedido_id: (state.pedidos.at(-1)?.pedido_id || 0) + 1,
+      cliente_id,
+      fecha_hora_entrega: entregaDate.toISOString(),
+      fecha_creacion: now.toISOString(),
+      total_estimado: total,
+      observaciones: $("obsIn").value || "",
+      estado: "en elaboración", // default
+      estado_pago: "impago",
+      detalles: state.tmpPedidoItems.map(i=>({...i}))
+    };
+
+    state.pedidos.push(pedido);
+
+    // reset form
+    state.tmpPedidoItems = [];
+    $("obsIn").value = "";
+    $("cantidadIn").value = 1;
+    renderItems();
+
+    toast("Pedido guardado");
+    renderAll();
+    setView("dashboard");
+  }
+
+  $("btnGuardarPedido").addEventListener("click", guardarPedido);
+
+  // ======= Crear cliente rápido =======
+  $("btnCrearCliente").addEventListener("click", ()=>{
+    const nombre = ($("cliNombre").value || "").trim();
+    if(!nombre) return toast("Poné un nombre");
+    const nuevo = {
+      cliente_id: (state.clientes.at(-1)?.cliente_id || 0) + 1,
+      nombre, telefono:"", email:"", activo:true
+    };
+    state.clientes.push(nuevo);
+    $("cliNombre").value = "";
+    renderSelects();
+    $("clienteSel").value = nuevo.cliente_id;
+    toast("Cliente creado");
+  });
+
+  // ======= Dashboard / tablas =======
+  function setEstadoPedido(pedido_id, nuevoEstado){
+    const p = state.pedidos.find(x=>x.pedido_id===pedido_id);
+    if(!p) return;
+    p.estado = nuevoEstado;
+    renderAll();
+    toast("Estado actualizado");
+  }
+
+  function registrarPago(pedido_id){
+    const p = state.pedidos.find(x=>x.pedido_id===pedido_id);
+    if(!p) return;
+
+    const montoStr = prompt("Monto del pago (número):", String(p.total_estimado));
+    if(montoStr === null) return;
+    const monto = Number(montoStr);
+    if(!Number.isFinite(monto) || monto<=0) return toast("Monto inválido");
+
+    const moneda = prompt("Moneda (UYU o USD):", "UYU") || "UYU";
+
+    state.pagos.push({
+      pago_id: (state.pagos.at(-1)?.pago_id || 0) + 1,
+      pedido_id,
+      fecha_hora: new Date().toISOString(),
+      moneda: moneda.toUpperCase(),
+      monto,
+      metodo_pago: "efectivo"
+    });
+
+    // estado pago simple
+    const totalPagado = state.pagos.filter(x=>x.pedido_id===pedido_id).reduce((a,x)=>a+x.monto,0);
+    if(totalPagado >= p.total_estimado) p.estado_pago = "pago";
+    else p.estado_pago = "parcial";
+
+    renderAll();
+    toast("Pago registrado");
+  }
+
+  function cancelarPedido(pedido_id){
+    const p = state.pedidos.find(x=>x.pedido_id===pedido_id);
+    if(!p) return;
+    if(!confirm("¿Cancelar pedido?")) return;
+    p.estado = "cancelado";
+    renderAll();
+    toast("Pedido cancelado");
+  }
+
+  function renderDashboard(){
+    const tb = $("tblHoy");
+    tb.innerHTML = "";
+
+    const hoy = new Date();
+    const pedidosHoy = state.pedidos
+      .filter(p => isSameDay(new Date(p.fecha_hora_entrega), hoy))
+      .sort((a,b)=> new Date(a.fecha_hora_entrega) - new Date(b.fecha_hora_entrega));
+
+    pedidosHoy.forEach(p=>{
+      const cliente = state.clientes.find(c=>c.cliente_id===p.cliente_id);
+      const hora = new Date(p.fecha_hora_entrega).toLocaleTimeString("es-UY",{hour:"2-digit", minute:"2-digit"});
+      const detalle = p.detalles.map(d=>{
+        const prod = state.productos.find(pr=>pr.producto_id===d.producto_id);
+        return `${prod.nombre} x${d.cantidad}`;
+      }).join(", ");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${hora}</td>
+        <td>${cliente?.nombre || "-"}</td>
+        <td>${detalle}</td>
+        <td class="state">${p.estado}</td>
+        <td><span class="tag">${p.estado_pago}</span></td>
+        <td class="right">
+          <select data-est="${p.pedido_id}">
+            <option ${p.estado==="en elaboración"?"selected":""}>en elaboración</option>
+            <option ${p.estado==="envasado"?"selected":""}>envasado</option>
+            <option ${p.estado==="listo"?"selected":""}>listo</option>
+            <option ${p.estado==="cancelado"?"selected":""}>cancelado</option>
+          </select>
+          <button class="secondary" data-pay="${p.pedido_id}">Pago</button>
+          <button class="danger" data-cancel="${p.pedido_id}">X</button>
+        </td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    // bind
+    tb.querySelectorAll("select[data-est]").forEach(s=>{
+      s.addEventListener("change", ()=> setEstadoPedido(Number(s.dataset.est), s.value));
+    });
+    tb.querySelectorAll("button[data-pay]").forEach(b=>{
+      b.addEventListener("click", ()=> registrarPago(Number(b.dataset.pay)));
+    });
+    tb.querySelectorAll("button[data-cancel]").forEach(b=>{
+      b.addEventListener("click", ()=> cancelarPedido(Number(b.dataset.cancel)));
+    });
+
+    // KPIs
+    $("kpiPedidos").textContent = pedidosHoy.length;
+    const unidades = pedidosHoy.reduce((acc,p)=> acc + p.detalles.reduce((a,d)=>a+d.cantidad,0), 0);
+    $("kpiUnidades").textContent = unidades;
+    const pagosHoy = state.pagos.filter(pg => pedidosHoy.some(p=>p.pedido_id===pg.pedido_id)).length;
+    $("kpiPagos").textContent = pagosHoy;
+    const pendientes = pedidosHoy.filter(p=>p.estado_pago==="impago").length;
+    $("kpiPendientes").textContent = pendientes;
+  }
+
+  function renderFuturos(){
+    const tb = $("tblFuturos");
+    tb.innerHTML = "";
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+    const futuros = state.pedidos
+      .filter(p => new Date(p.fecha_hora_entrega) > new Date(todayISO()+"T23:59:59"))
+      .sort((a,b)=> new Date(a.fecha_hora_entrega) - new Date(b.fecha_hora_entrega));
+
+    futuros.forEach(p=>{
+      const cliente = state.clientes.find(c=>c.cliente_id===p.cliente_id);
+      const fecha = new Date(p.fecha_hora_entrega).toLocaleString("es-UY",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+      const resumen = p.detalles.map(d=>{
+        const prod = state.productos.find(pr=>pr.producto_id===d.producto_id);
+        return `${prod.nombre} x${d.cantidad}`;
+      }).join(", ");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${fecha}</td>
+        <td>${cliente?.nombre || "-"}</td>
+        <td>${resumen}</td>
+        <td class="state">${p.estado}</td>
+        <td><span class="tag">${p.estado_pago}</span></td>
+      `;
+      tb.appendChild(tr);
+    });
+  }
+
+  // ======= Producción =======
+  function calcProduccionDelDia(){
+    const hoy = new Date();
+    const pedidosHoy = state.pedidos.filter(p => isSameDay(new Date(p.fecha_hora_entrega), hoy) && p.estado !== "cancelado");
+
+    const map = new Map(); // producto_id => total
+    pedidosHoy.forEach(p=>{
+      p.detalles.forEach(d=>{
+        map.set(d.producto_id, (map.get(d.producto_id) || 0) + d.cantidad);
+      });
+    });
+    return [...map.entries()].map(([producto_id, total])=>{
+      const prod = state.productos.find(x=>x.producto_id===producto_id);
+      return { producto_id, nombre: prod.nombre, unidad: prod.unidad_medida, total };
+    }).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  }
+
+  function renderProduccion(){
+    const tb = $("tblProduccion");
+    tb.innerHTML = "";
+    const rows = calcProduccionDelDia();
+
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.nombre}</td><td>${r.unidad}</td><td><strong>${r.total}</strong></td>`;
+      tb.appendChild(tr);
+    });
+
+    if(rows.length===0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="3" class="muted">No hay pedidos hoy (o están cancelados).</td>`;
+      tb.appendChild(tr);
+    }
+  }
+
+  $("btnRecalc").addEventListener("click", ()=>{
+    renderProduccion();
+    toast("Producción recalculada");
+  });
+
+  // ======= Recetas =======
+  function renderRecetas(){
+    renderSelects();
+
+    const tb = $("tblRecetas");
+    tb.innerHTML = "";
+    state.recetas.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${r.nombre}</strong></td>
+        <td>${r.base_kg_harina} kg harina</td>
+        <td>${r.salida_unidades} unid</td>
+        <td>${r.merma_pct || 0}%</td>
+        <td>${r.activa ? "Sí" : "No"}</td>
+        <td class="right">
+          <button class="secondary" data-edit="${r.receta_id}">Editar</button>
+          <button class="danger" data-delrec="${r.receta_id}">Eliminar</button>
+        </td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    tb.querySelectorAll("button[data-edit]").forEach(b=>{
+      b.addEventListener("click", ()=> loadReceta(Number(b.dataset.edit)));
+    });
+    tb.querySelectorAll("button[data-delrec]").forEach(b=>{
+      b.addEventListener("click", ()=> delReceta(Number(b.dataset.delrec)));
+    });
+  }
+
+  function loadReceta(receta_id){
+    const r = state.recetas.find(x=>x.receta_id===receta_id);
+    if(!r) return;
+    $("recNombre").value = r.nombre;
+    $("recBase").value = r.base_kg_harina;
+    $("recSalida").value = r.salida_unidades;
+    $("recMerma").value = r.merma_pct || 0;
+    $("recActiva").value = String(r.activa);
+    $("btnGuardarReceta").dataset.editing = String(receta_id);
+    toast("Receta cargada");
+  }
+
+  function clearRecetaForm(){
+    $("recNombre").value = "";
+    $("recBase").value = "";
+    $("recSalida").value = "";
+    $("recMerma").value = "";
+    $("recActiva").value = "true";
+    delete $("btnGuardarReceta").dataset.editing;
+  }
+
+  function saveReceta(){
+    const nombre = ($("recNombre").value || "").trim();
+    const base = Number($("recBase").value);
+    const salida = Number($("recSalida").value);
+    const merma = Number($("recMerma").value || 0);
+    const activa = $("recActiva").value === "true";
+
+    if(!nombre) return toast("Nombre requerido");
+    if(!(base > 0)) return toast("Base (kg harina) debe ser > 0");
+    if(!(salida > 0)) return toast("Salida debe ser > 0");
+
+    const editing = $("btnGuardarReceta").dataset.editing;
+    if(editing){
+      const r = state.recetas.find(x=>x.receta_id===Number(editing));
+      r.nombre = nombre;
+      r.base_kg_harina = base;
+      r.salida_unidades = salida;
+      r.merma_pct = merma;
+      r.activa = activa;
+      toast("Receta actualizada");
+    } else {
+      state.recetas.push({
+        receta_id: (state.recetas.at(-1)?.receta_id || 0) + 1,
+        nombre,
+        base_kg_harina: base,
+        salida_unidades: salida,
+        merma_pct: merma,
+        activa
+      });
+      toast("Receta creada");
+    }
+
+    clearRecetaForm();
+    renderRecetas();
+  }
+
+  function delReceta(receta_id){
+    if(!confirm("¿Eliminar receta?")) return;
+    state.recetas = state.recetas.filter(r=>r.receta_id!==receta_id);
+    renderRecetas();
+    toast("Receta eliminada");
+  }
+
+  function calcularHarina(){
+    const receta_id = Number($("recSel").value);
+    const harina = Number($("harinaDisp").value);
+    if(!(harina >= 0)) return toast("Harina inválida");
+
+    const r = state.recetas.find(x=>x.receta_id===receta_id);
+    if(!r) return toast("Seleccioná una receta");
+
+    // rendimiento: (harina / base) * salida, con merma opcional
+    const factor = harina / r.base_kg_harina;
+    let unidades = factor * r.salida_unidades;
+    if((r.merma_pct || 0) > 0) unidades = unidades * (1 - (r.merma_pct/100));
+
+    const unidadesInt = Math.floor(unidades); // prototipo: redondeo hacia abajo
+    $("resultadoCalc").innerHTML = `
+      <div><strong>Receta:</strong> ${r.nombre}</div>
+      <div><strong>Harina:</strong> ${harina} kg</div>
+      <div style="margin-top:6px;">
+        <strong>Rinde aprox:</strong> ${unidades.toFixed(2)} unid
+        <span class="tag">usable: ${unidadesInt} unid</span>
+      </div>
+      <div class="muted" style="margin-top:8px;">
+        Fórmula: (harina/base)*salida ${r.merma_pct ? "con merma" : ""}. En implementación real se define regla de redondeo.
+      </div>
+    `;
+  }
+
+  $("btnGuardarReceta").addEventListener("click", saveReceta);
+  $("btnLimpiarReceta").addEventListener("click", clearRecetaForm);
+  $("btnCalcular").addEventListener("click", calcularHarina);
+
+  // ======= Seed data =======
+  $("btnSeed").addEventListener("click", ()=>{
+    if(state.pedidos.length > 0) return toast("Ya hay datos cargados");
+
+    const now = new Date();
+    const d1 = new Date(now); d1.setHours(9,30,0,0);
+    const d2 = new Date(now); d2.setHours(12,0,0,0);
+    const d3 = new Date(now); d3.setDate(d3.getDate()+2); d3.setHours(10,0,0,0);
+
+    state.pedidos.push({
+      pedido_id: 1, cliente_id: 2,
+      fecha_hora_entrega: d1.toISOString(),
+      fecha_creacion: now.toISOString(),
+      total_estimado: 35*10 + 45*6,
+      observaciones: "Entregar por mostrador",
+      estado: "en elaboración",
+      estado_pago: "impago",
+      detalles: [
+        { pedido_detalle_id: 1, producto_id: 1, cantidad: 10, precio_unitario: 35, subtotal: 350 },
+        { pedido_detalle_id: 2, producto_id: 2, cantidad: 6, precio_unitario: 45, subtotal: 270 }
+      ]
+    });
+
+    state.pedidos.push({
+      pedido_id: 2, cliente_id: 1,
+      fecha_hora_entrega: d2.toISOString(),
+      fecha_creacion: now.toISOString(),
+      total_estimado: 28*20,
+      observaciones: "",
+      estado: "envasado",
+      estado_pago: "parcial",
+      detalles: [
+        { pedido_detalle_id: 3, producto_id: 3, cantidad: 20, precio_unitario: 28, subtotal: 560 }
+      ]
+    });
+
+    state.pedidos.push({
+      pedido_id: 3, cliente_id: 2,
+      fecha_hora_entrega: d3.toISOString(),
+      fecha_creacion: now.toISOString(),
+      total_estimado: 45*15,
+      observaciones: "Pedido futuro",
+      estado: "en elaboración",
+      estado_pago: "impago",
+      detalles: [
+        { pedido_detalle_id: 4, producto_id: 2, cantidad: 15, precio_unitario: 45, subtotal: 675 }
+      ]
+    });
+
+    state.pagos.push({ pago_id: 1, pedido_id: 2, fecha_hora: now.toISOString(), moneda:"UYU", monto: 300, metodo_pago:"efectivo" });
+
+    renderAll();
+    toast("Ejemplo cargado");
+  });
+
+  // ======= Render general =======
+  function renderAll(){
+    renderSelects();
+    renderDashboard();
+    renderFuturos();
+    renderProduccion();
+    renderRecetas();
+  }
+
+  // init
+  $("todayPill").textContent = "Hoy: " + new Date().toLocaleDateString("es-UY");
+  renderAll();
+
+  // default entregaDT: hoy + 1h
+  const def = new Date(); def.setHours(def.getHours()+1);
+  const pad = (n)=>String(n).padStart(2,"0");
+  $("entregaDT").value = `${def.getFullYear()}-${pad(def.getMonth()+1)}-${pad(def.getDate())}T${pad(def.getHours())}:${pad(def.getMinutes())}`;
+</script>
+</body>
+</html>
