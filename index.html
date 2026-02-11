@@ -66,6 +66,38 @@ url("./images.jpg")
       .kpi { grid-template-columns: 1fr 1fr; }
       .row, .row3, .split { grid-template-columns: 1fr; }
     }
+    /* ====== MODO PARED (Producción) ====== */
+.wall {
+  border: 2px solid #111 !important;
+}
+
+.wall .title h2{
+  font-size: 28px !important;
+}
+
+.wall .muted{
+  font-size: 16px !important;
+}
+
+.wall table th{
+  font-size: 16px !important;
+  padding: 14px 12px !important;
+}
+
+.wall table td{
+  font-size: 26px !important;
+  padding: 18px 12px !important;
+}
+
+.wall .big-total{
+  font-size: 34px !important;
+  font-weight: 900 !important;
+}
+
+.wall .right strong{
+  font-size: 30px !important;
+}
+
   </style>
 </head>
 <body>
@@ -109,7 +141,10 @@ url("./images.jpg")
 
     <div class="kpi" style="margin-bottom:12px;">
       <div class="box"><div class="n" id="kpiPedidos">0</div><div class="l">Pedidos hoy</div></div>
-      <div class="box"><div class="n" id="kpiUnidades">0</div><div class="l">Unidades totales</div></div>
+<button class="box" id="kpiUnidadesBox" style="text-align:left; cursor:pointer;">
+  <div class="n" id="kpiUnidades">0</div>
+  <div class="l">Unidades totales <span class="tag" style="margin-left:6px;">Ver desglose</span></div>
+</button>
       <div class="box"><div class="n" id="kpiPagos">0</div><div class="l">Pagos registrados</div></div>
       <div class="box"><div class="n" id="kpiPendientes">0</div><div class="l">Pendientes de pago</div></div>
     </div>
@@ -232,10 +267,12 @@ url("./images.jpg")
   <section id="view-produccion" class="card hidden">
     <div class="title">
       <h2>Totales de producción (día)</h2>
-      <div class="btnbar">
-        <button class="secondary" id="btnRecalc">Recalcular</button>
-        <button class="primary" id="btnIrRecetas">Ir a recetas →</button>
-      </div>
+<div class="btnbar">
+  <button class="secondary" id="btnRecalc">Recalcular</button>
+  <button class="secondary" id="btnWall">Modo pared</button>
+  <button class="primary" id="btnIrRecetas">Ir a recetas →</button>
+</div>
+
     </div>
     <div class="muted">Consolida los pedidos del día por producto. Esto alimenta el cálculo de insumos.</div>
     <div class="hr"></div>
@@ -411,6 +448,22 @@ url("./images.jpg")
   $("btnGoNew").addEventListener("click", ()=> setView("nuevoPedido"));
   $("btnCancelarPedidoForm").addEventListener("click", ()=> setView("dashboard"));
   $("btnIrRecetas").addEventListener("click", ()=> setView("recetas"));
+  $("kpiUnidadesBox").addEventListener("click", ()=> {
+  setView("produccion");
+  renderProduccion(); // asegura recalcular al entrar
+});
+let wallMode = false;
+
+$("btnWall").addEventListener("click", ()=>{
+  wallMode = !wallMode;
+
+  const sec = $("view-produccion");
+  sec.classList.toggle("wall", wallMode);
+
+  $("btnWall").textContent = wallMode ? "Modo normal" : "Modo pared";
+});
+
+
 
   // ======= Render select clientes / productos =======
   function renderSelects(){
