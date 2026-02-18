@@ -14,7 +14,7 @@ body {
 
   background:
     linear-gradient(rgba(246,247,251,0.85), rgba(246,247,251,0.85)),
-url("./images.jpg")
+    url("./images.jpg");
 
   background-size: cover !important;
   background-position: center !important;
@@ -110,10 +110,65 @@ url("./images.jpg")
 </header>
 
 <main>
+  <!-- WHATSAPP (SIMULADO) -->
+<section id="view-whatsapp" class="card hidden">
+  <div class="title">
+    <h2>WhatsApp (simulado) → crea pedidos</h2>
+    <span class="pill">Ilustrativo (sin integración real)</span>
+  </div>
+
+  <div class="wa-wrap">
+    <div class="wa-phone">
+      <div class="wa-top">
+        <div>Panadería • Pedidos</div>
+        <small>Online</small>
+      </div>
+
+      <div class="wa-chat" id="waChat"></div>
+
+      <div class="wa-input">
+        <input id="waMsg" placeholder='Ej: Martín | hoy 10:30 | Vainitas x10, Pan flauta x6' />
+        <button class="primary" id="btnWaSend">Enviar</button>
+      </div>
+    </div>
+
+    <div class="wa-help">
+      <div class="muted" style="margin-bottom:10px;">
+        Formato rápido (simple para prototipo). Podés escribir:
+      </div>
+
+      <div class="wa-example">
+        Martín | hoy 10:30 | Vainitas x10, Pan flauta x6
+      </div>
+
+      <div class="muted" style="margin:10px 0;">
+        También podés usar fecha:
+      </div>
+
+      <div class="wa-example">
+        Cliente Mostrador | 2026-02-20 09:00 | Bizcochos x20
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="muted">
+        Al enviar:
+        <ul style="margin:8px 0 0 18px;">
+          <li>Se crea un pedido en el sistema</li>
+          <li>Si la entrega es hoy → aparece en “Pedidos del día”</li>
+          <li>Si es futura → aparece en “Pedidos futuros”</li>
+        </ul>
+      </div>
+</section>
+
   <nav class="card">
+    <button class="navbtn" data-view="whatsapp">💬 WhatsApp</button>
     <button class="navbtn active" data-view="dashboard">📋 Pedidos del día</button>
     <button class="navbtn" data-view="nuevoPedido">➕ Nuevo pedido</button>
     <button class="navbtn" data-view="futuros">📆 Pedidos futuros</button>
+    <button class="navbtn" data-view="clientes">👤 Clientes</button>
+    <button class="navbtn" data-view="deudores">💳 Deudores</button>
+    <button class="navbtn" data-view="informes">📈 Informes</button>
     <button class="navbtn" data-view="produccion">🏭 Producción</button>
     <button class="navbtn" data-view="recetas">🧾 Recetas & Cálculo por harina</button>
     <div class="hr"></div>
@@ -128,6 +183,59 @@ url("./images.jpg")
       </ol>
     </div>
   </nav>
+
+  <!-- WHATSAPP (SIMULADO) -->
+<section id="view-whatsapp" class="card hidden">
+  <div class="title">
+    <h2>WhatsApp (simulado) → crea pedidos</h2>
+    <span class="pill">Ilustrativo (sin integración real)</span>
+  </div>
+
+  <div class="wa-wrap">
+    <div class="wa-phone">
+      <div class="wa-top">
+        <div>Panadería • Pedidos</div>
+        <small>Online</small>
+      </div>
+
+      <div class="wa-chat" id="waChat"></div>
+
+      <div class="wa-input">
+        <input id="waMsg" placeholder='Ej: Martín | hoy 10:30 | Vainitas x10, Pan flauta x6' />
+        <button class="primary" id="btnWaSend">Enviar</button>
+      </div>
+    </div>
+
+    <div class="wa-help">
+      <div class="muted" style="margin-bottom:10px;">
+        Formato rápido (simple para prototipo). Podés escribir:
+      </div>
+
+      <div class="wa-example">
+        Martín | hoy 10:30 | Vainitas x10, Pan flauta x6
+      </div>
+
+      <div class="muted" style="margin:10px 0;">
+        También podés usar fecha:
+      </div>
+
+      <div class="wa-example">
+        Cliente Mostrador | 2026-02-20 09:00 | Bizcochos x20
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="muted">
+        Al enviar:
+        <ul style="margin:8px 0 0 18px;">
+          <li>Se crea un pedido en el sistema</li>
+          <li>Si la entrega es hoy → aparece en "Pedidos del día"</li>
+          <li>Si es futura → aparece en "Pedidos futuros"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
   <!-- DASHBOARD -->
   <section id="view-dashboard" class="card">
@@ -263,6 +371,203 @@ url("./images.jpg")
     </table>
   </section>
 
+  <!-- CLIENTES -->
+<section id="view-clientes" class="card hidden">
+  <div class="title">
+    <h2>Clientes</h2>
+    <span class="pill">Recepción / Admin</span>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Buscar</label>
+      <input id="cliSearch" placeholder="Buscar por nombre o teléfono..." />
+    </div>
+    <div>
+      <label>Estado</label>
+      <select id="cliFiltroEstado">
+        <option value="activos">Activos</option>
+        <option value="todos">Todos</option>
+        <option value="inactivos">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th class="right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tblClientes"></tbody>
+  </table>
+
+  <div class="hr"></div>
+
+  <div class="title">
+    <h2>Detalle de cliente</h2>
+    <span class="pill" id="cliDetallePill">Seleccioná un cliente</span>
+  </div>
+
+  <div id="cliDetalleBox" class="muted">Seleccioná un cliente para ver sus pedidos y pagos.</div>
+
+  <div class="hr"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Entrega</th>
+        <th>Pedido</th>
+        <th>Estado</th>
+        <th>Pago</th>
+        <th>Total</th>
+        <th class="right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tblCliPedidos"></tbody>
+  </table>
+</section>
+
+<!-- DEUDORES -->
+<section id="view-deudores" class="card hidden">
+  <div class="title">
+    <h2>Deudores</h2>
+    <span class="pill">Recepción / Admin</span>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Buscar cliente</label>
+      <input id="deuSearch" placeholder="Nombre / teléfono..." />
+    </div>
+    <div>
+      <label>Mostrar</label>
+      <select id="deuFiltro">
+        <option value="soloDeuda">Solo con deuda</option>
+        <option value="todos">Todos</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="kpi" style="margin-bottom:12px;">
+    <div class="box"><div class="n" id="kpiDeudores">0</div><div class="l">Clientes con deuda</div></div>
+    <div class="box"><div class="n" id="kpiDeudaTotal">$ 0</div><div class="l">Deuda total (estimada)</div></div>
+    <div class="box"><div class="n" id="kpiPedidosPend">0</div><div class="l">Pedidos impagos/parciales</div></div>
+    <div class="box"><div class="n" id="kpiCobrado">$ 0</div><div class="l">Cobrado (pagos registrados)</div></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Contacto</th>
+        <th>Pedidos con deuda</th>
+        <th>Deuda</th>
+        <th class="right">Ver detalle</th>
+      </tr>
+    </thead>
+    <tbody id="tblDeudores"></tbody>
+  </table>
+
+  <div class="hr"></div>
+
+  <div class="title">
+    <h2>Detalle de deuda</h2>
+    <span class="pill" id="deuDetallePill">Seleccioná un cliente</span>
+  </div>
+
+  <div id="deuDetalleBox" class="muted">Seleccioná un cliente para ver sus pedidos pendientes y pagos.</div>
+
+  <div class="hr"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Entrega</th>
+        <th>Pedido</th>
+        <th>Total</th>
+        <th>Pagado</th>
+        <th>Saldo</th>
+        <th>Estado pago</th>
+        <th class="right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tblDeuPedidos"></tbody>
+  </table>
+</section>
+
+<!-- INFORMES -->
+<section id="view-informes" class="card hidden">
+  <div class="title">
+    <h2>Informes</h2>
+    <span class="pill">Resumen del negocio</span>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Desde</label>
+      <input type="date" id="infDesde" />
+    </div>
+    <div>
+      <label>Hasta</label>
+      <input type="date" id="infHasta" />
+    </div>
+  </div>
+
+  <div class="btnbar" style="margin-top:12px;">
+    <button class="secondary" id="btnInfHoy">Hoy</button>
+    <button class="secondary" id="btnInf7">Últimos 7 días</button>
+    <button class="secondary" id="btnInf30">Últimos 30 días</button>
+    <button class="primary" id="btnInfGen">Generar</button>
+  </div>
+
+  <div class="hr"></div>
+
+  <div class="kpi" style="margin-bottom:12px;">
+    <div class="box"><div class="n" id="infKpiPedidos">0</div><div class="l">Pedidos (rango)</div></div>
+    <div class="box"><div class="n" id="infKpiUnidades">0</div><div class="l">Unidades (rango)</div></div>
+    <div class="box"><div class="n" id="infKpiFact">$ 0</div><div class="l">Total estimado</div></div>
+    <div class="box"><div class="n" id="infKpiCob">$ 0</div><div class="l">Cobrado</div></div>
+  </div>
+
+  <div class="split">
+    <div class="card" style="border-radius: var(--radius); border:1px solid #eef0f6;">
+      <div class="title">
+        <h2 style="font-size:14px;">Top productos (unidades)</h2>
+        <span class="tag">Consolidado</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Producto</th><th class="right">Unidades</th></tr>
+        </thead>
+        <tbody id="tblInfProductos"></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="border-radius: var(--radius); border:1px solid #eef0f6;">
+      <div class="title">
+        <h2 style="font-size:14px;">Top clientes (total)</h2>
+        <span class="tag">Consolidado</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Cliente</th><th class="right">Total</th></tr>
+        </thead>
+        <tbody id="tblInfClientes"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
   <!-- PRODUCCIÓN -->
   <section id="view-produccion" class="card hidden">
     <div class="title">
@@ -395,6 +700,168 @@ url("./images.jpg")
 <div class="toast" id="toast"></div>
 
 <script>
+  // ======= WhatsApp mock =======
+function waAppend(text, who="me"){
+  const chat = $("waChat");
+  const b = document.createElement("div");
+  b.className = "bubble " + (who === "me" ? "me" : "bot");
+  const time = new Date().toLocaleTimeString("es-UY",{hour:"2-digit", minute:"2-digit"});
+  b.innerHTML = `<div>${text}</div><span class="t">${time}</span>`;
+  chat.appendChild(b);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function parseEntrega(raw){
+  // soporta: "hoy 10:30", "mañana 09:00", "2026-02-20 09:00"
+  const t = (raw || "").trim().toLowerCase();
+  const now = new Date();
+
+  // YYYY-MM-DD HH:mm
+  const m = t.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})$/);
+  if(m){
+    return new Date(`${m[1]}T${m[2]}:00`);
+  }
+
+  // hoy HH:mm
+  const mhoy = t.match(/^hoy\s+(\d{2}:\d{2})$/);
+  if(mhoy){
+    const d = new Date(now);
+    const [hh,mm] = mhoy[1].split(":").map(Number);
+    d.setHours(hh,mm,0,0);
+    return d;
+  }
+
+  // mañana HH:mm
+  const mman = t.match(/^(mañana|manana)\s+(\d{2}:\d{2})$/);
+  if(mman){
+    const d = new Date(now);
+    d.setDate(d.getDate()+1);
+    const [hh,mm] = mman[2].split(":").map(Number);
+    d.setHours(hh,mm,0,0);
+    return d;
+  }
+
+  return null;
+}
+
+function findClienteByName(name){
+  const n = (name||"").trim().toLowerCase();
+  return state.clientes.find(c => c.activo && (c.nombre||"").trim().toLowerCase() === n) || null;
+}
+
+function findProductoByName(name){
+  const n = (name||"").trim().toLowerCase();
+  return state.productos.find(p => p.activo && (p.nombre||"").trim().toLowerCase() === n) || null;
+}
+
+function createPedidoFromWhatsapp(msg){
+  // Formato: Cliente | entrega | Producto xN, Producto xN
+  const parts = msg.split("|").map(s=>s.trim());
+  if(parts.length < 3){
+    return { ok:false, error:'Formato inválido. Usá: Cliente | hoy 10:30 | Producto x2, Producto x1' };
+  }
+
+  const cliName = parts[0];
+  const entregaRaw = parts[1];
+  const itemsRaw = parts.slice(2).join("|"); // por si meten "|" en el detalle
+
+  // cliente (si no existe, lo creamos)
+  let cli = findClienteByName(cliName);
+  if(!cli){
+    cli = {
+      cliente_id: (state.clientes.at(-1)?.cliente_id || 0) + 1,
+      nombre: cliName,
+      telefono:"",
+      email:"",
+      activo:true
+    };
+    state.clientes.push(cli);
+  }
+
+  const entregaDate = parseEntrega(entregaRaw);
+  if(!entregaDate || isNaN(entregaDate.getTime())){
+    return { ok:false, error:'Fecha/hora inválida. Ej: "hoy 10:30" o "2026-02-20 09:00".' };
+  }
+
+  // parse items: "Vainitas x10, Pan flauta x6"
+  const rawItems = itemsRaw.split(",").map(s=>s.trim()).filter(Boolean);
+  if(rawItems.length === 0) return { ok:false, error:"No hay productos. Ej: Vainitas x10, Pan flauta x6" };
+
+  const detalles = [];
+  for(const it of rawItems){
+    const mm = it.match(/^(.+?)\s*x\s*(\d+)$/i);
+    if(!mm) return { ok:false, error:`Item inválido: "${it}". Usá "Producto xN".` };
+
+    const prodName = mm[1].trim();
+    const cantidad = Number(mm[2]);
+    const prod = findProductoByName(prodName);
+    if(!prod) return { ok:false, error:`Producto no encontrado: "${prodName}". (Debe existir en el sistema)` };
+    if(!(cantidad>0)) return { ok:false, error:`Cantidad inválida en "${it}".` };
+
+    detalles.push({
+      pedido_detalle_id: Date.now() + Math.floor(Math.random()*1000),
+      producto_id: prod.producto_id,
+      cantidad,
+      precio_unitario: prod.precio_base,
+      subtotal: cantidad * prod.precio_base
+    });
+  }
+
+  const total = detalles.reduce((a,d)=>a+d.subtotal,0);
+  const now = new Date();
+
+  const pedido = {
+    pedido_id: (state.pedidos.at(-1)?.pedido_id || 0) + 1,
+    cliente_id: cli.cliente_id,
+    fecha_hora_entrega: entregaDate.toISOString(),
+    fecha_creacion: now.toISOString(),
+    total_estimado: total,
+    observaciones: "Creado desde WhatsApp (simulado)",
+    estado: "en elaboración",
+    estado_pago: "impago",
+    detalles
+  };
+
+  state.pedidos.push(pedido);
+  return { ok:true, pedido_id: pedido.pedido_id };
+}
+
+function initWhatsappMock(){
+  if(!$("waChat")) return;
+
+  // mensaje inicial
+  if($("waChat").children.length === 0){
+    waAppend("Hola 👋 Enviá un pedido con el formato:\nCliente | hoy 10:30 | Vainitas x10, Pan flauta x6", "bot");
+  }
+
+  $("btnWaSend").addEventListener("click", ()=>{
+    const msg = ($("waMsg").value || "").trim();
+    if(!msg) return;
+
+    waAppend(msg, "me");
+    $("waMsg").value = "";
+
+    const r = createPedidoFromWhatsapp(msg);
+    if(!r.ok){
+      waAppend("No pude crear el pedido: " + r.error, "bot");
+      return;
+    }
+
+    waAppend("✅ Pedido creado (#" + r.pedido_id + "). Ya lo podés ver en Pedidos del día / Futuros.", "bot");
+    renderAll();
+  });
+
+  $("waMsg").addEventListener("keydown", (e)=>{
+    if(e.key === "Enter"){
+      e.preventDefault();
+      $("btnWaSend").click();
+    }
+  });
+}
+
+// llamar en init (al final)
+// initWhatsappMock() se invoca al final, después de inicializar `state` y utilidades
+
   // ======= Datos (mock) =======
   const state = {
     usuarios: [{ usuario_id: 1, nombre: "Recepción", rol: "Recepción", activo: true }],
@@ -433,6 +900,36 @@ url("./images.jpg")
     t.classList.add("show");
     setTimeout(()=>t.classList.remove("show"), 1600);
   };
+
+  // ======= Helpers deuda / pagos =======
+  function sumPagosPedido(pedido_id){
+    return state.pagos
+      .filter(p=>p.pedido_id===pedido_id)
+      .reduce((acc,p)=> acc + (Number(p.monto)||0), 0);
+  }
+
+  function saldoPedido(pedido){
+    const pagado = sumPagosPedido(pedido.pedido_id);
+    const total = Number(pedido.total_estimado)||0;
+    return Math.max(0, total - pagado);
+  }
+
+  function resumenPedido(p){
+    return p.detalles.map(d=>{
+      const prod = state.productos.find(x=>x.producto_id===d.producto_id);
+      return `${prod?.nombre || "?"} x${d.cantidad}`;
+    }).join(", ");
+  }
+
+  function formatDT(iso){
+    return new Date(iso).toLocaleString("es-UY",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+  }
+
+  function inRange(dateISO, desdeISO, hastaISO){
+    const t = new Date(dateISO).getTime();
+    return t >= new Date(desdeISO+"T00:00:00").getTime()
+        && t <= new Date(hastaISO+"T23:59:59").getTime();
+  }
 
   // ======= Navegación =======
   function setView(viewName){
@@ -592,6 +1089,327 @@ $("btnWall").addEventListener("click", ()=>{
     setView("dashboard");
   }
 
+// ======= CLIENTES =======
+let selectedClienteId = null;
+
+function renderClientes(){
+  const q = ($("cliSearch")?.value || "").trim().toLowerCase();
+  const filtro = $("cliFiltroEstado")?.value || "activos";
+
+  let clientes = [...state.clientes];
+
+  if(filtro==="activos") clientes = clientes.filter(c=>c.activo);
+  if(filtro==="inactivos") clientes = clientes.filter(c=>!c.activo);
+
+  if(q){
+    clientes = clientes.filter(c =>
+      (c.nombre||"").toLowerCase().includes(q) ||
+      (c.telefono||"").toLowerCase().includes(q)
+    );
+  }
+
+  const tb = $("tblClientes");
+  tb.innerHTML = "";
+
+  clientes.forEach(c=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${c.nombre}</strong></td>
+      <td>${c.telefono || "-"}</td>
+      <td>${c.email || "-"}</td>
+      <td>${c.tipo || (c.cliente_id===1 ? "MOSTRADOR" : "RECURRENTE")}</td>
+      <td>${c.activo ? "<span class='tag'>activo</span>" : "<span class='tag'>inactivo</span>"}</td>
+      <td class="right">
+        <button class="secondary" data-cli="${c.cliente_id}">Ver</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("button[data-cli]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      selectedClienteId = Number(b.dataset.cli);
+      renderClienteDetalle();
+    });
+  });
+
+  renderClienteDetalle(); // refresca si ya había uno seleccionado
+}
+
+function renderClienteDetalle(){
+  const pill = $("cliDetallePill");
+  const box = $("cliDetalleBox");
+  const tb = $("tblCliPedidos");
+
+  tb.innerHTML = "";
+  if(!selectedClienteId){
+    pill.textContent = "Seleccioná un cliente";
+    box.textContent = "Seleccioná un cliente para ver sus pedidos y pagos.";
+    return;
+  }
+
+  const c = state.clientes.find(x=>x.cliente_id===selectedClienteId);
+  pill.textContent = c ? `Cliente: ${c.nombre}` : "Cliente";
+
+  const pedidos = state.pedidos
+    .filter(p=>p.cliente_id===selectedClienteId)
+    .sort((a,b)=> new Date(b.fecha_hora_entrega) - new Date(a.fecha_hora_entrega));
+
+  // mini resumen
+  const total = pedidos.reduce((a,p)=>a+(Number(p.total_estimado)||0),0);
+  const cobrado = pedidos.reduce((a,p)=>a+sumPagosPedido(p.pedido_id),0);
+  const deuda = pedidos.reduce((a,p)=>a+saldoPedido(p),0);
+
+  box.innerHTML = `
+    <div><strong>Contacto:</strong> ${c.telefono || "-"} · ${c.email || "-"}</div>
+    <div style="margin-top:6px;">
+      <span class="tag">Pedidos: ${pedidos.length}</span>
+      <span class="tag">Total: ${fmtMoney(total)}</span>
+      <span class="tag">Cobrado: ${fmtMoney(cobrado)}</span>
+      <span class="tag">Saldo: ${fmtMoney(deuda)}</span>
+    </div>
+  `;
+
+  pedidos.forEach(p=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${formatDT(p.fecha_hora_entrega)}</td>
+      <td>${resumenPedido(p)}</td>
+      <td class="state">${p.estado}</td>
+      <td><span class="tag">${p.estado_pago}</span></td>
+      <td>${fmtMoney(p.total_estimado)}</td>
+      <td class="right">
+        <button class="secondary" data-pay="${p.pedido_id}">Pago</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("button[data-pay]").forEach(b=>{
+    b.addEventListener("click", ()=> registrarPago(Number(b.dataset.pay)));
+  });
+}
+
+// ======= DEUDORES =======
+let selectedDeudorClienteId = null;
+
+function buildDeudores(){
+  // Clientes con al menos un pedido no cancelado
+  const clientes = state.clientes.filter(c=>c.activo);
+
+  const res = clientes.map(c=>{
+    const pedidos = state.pedidos.filter(p=>p.cliente_id===c.cliente_id && p.estado!=="cancelado");
+    const pedidosDeuda = pedidos.filter(p=>p.estado_pago!=="pago" && saldoPedido(p)>0);
+    const deuda = pedidosDeuda.reduce((a,p)=>a+saldoPedido(p),0);
+    const cobrado = pedidos.reduce((a,p)=>a+sumPagosPedido(p.pedido_id),0);
+    return { cliente: c, pedidos, pedidosDeuda, deuda, cobrado };
+  });
+
+  return res.sort((a,b)=> b.deuda - a.deuda);
+}
+
+function renderDeudores(){
+  const q = ($("deuSearch")?.value || "").trim().toLowerCase();
+  const filtro = $("deuFiltro")?.value || "soloDeuda";
+
+  let rows = buildDeudores();
+
+  if(q){
+    rows = rows.filter(r =>
+      (r.cliente.nombre||"").toLowerCase().includes(q) ||
+      (r.cliente.telefono||"").toLowerCase().includes(q)
+    );
+  }
+
+  if(filtro==="soloDeuda"){
+    rows = rows.filter(r=>r.deuda>0);
+  }
+
+  // KPIs
+  const conDeuda = rows.filter(r=>r.deuda>0);
+  const deudaTotal = conDeuda.reduce((a,r)=>a+r.deuda,0);
+  const pedidosPend = conDeuda.reduce((a,r)=>a+r.pedidosDeuda.length,0);
+  const cobrado = rows.reduce((a,r)=>a+r.cobrado,0);
+
+  $("kpiDeudores").textContent = conDeuda.length;
+  $("kpiDeudaTotal").textContent = fmtMoney(deudaTotal);
+  $("kpiPedidosPend").textContent = pedidosPend;
+  $("kpiCobrado").textContent = fmtMoney(cobrado);
+
+  const tb = $("tblDeudores");
+  tb.innerHTML = "";
+
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${r.cliente.nombre}</strong></td>
+      <td>${r.cliente.telefono || "-"}</td>
+      <td>${r.pedidosDeuda.length}</td>
+      <td><strong>${fmtMoney(r.deuda)}</strong></td>
+      <td class="right">
+        <button class="secondary" data-deu="${r.cliente.cliente_id}">Detalle</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("button[data-deu]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      selectedDeudorClienteId = Number(b.dataset.deu);
+      renderDeudorDetalle();
+    });
+  });
+
+  renderDeudorDetalle();
+}
+
+function renderDeudorDetalle(){
+  const pill = $("deuDetallePill");
+  const box = $("deuDetalleBox");
+  const tb = $("tblDeuPedidos");
+
+  tb.innerHTML = "";
+
+  if(!selectedDeudorClienteId){
+    pill.textContent = "Seleccioná un cliente";
+    box.textContent = "Seleccioná un cliente para ver sus pedidos pendientes y pagos.";
+    return;
+  }
+
+  const c = state.clientes.find(x=>x.cliente_id===selectedDeudorClienteId);
+  pill.textContent = c ? `Cliente: ${c.nombre}` : "Cliente";
+
+  const pedidos = state.pedidos
+    .filter(p=>p.cliente_id===selectedDeudorClienteId && p.estado!=="cancelado")
+    .sort((a,b)=> new Date(b.fecha_hora_entrega) - new Date(a.fecha_hora_entrega));
+
+  const pedidosDeuda = pedidos.filter(p=>p.estado_pago!=="pago" && saldoPedido(p)>0);
+  const deuda = pedidosDeuda.reduce((a,p)=>a+saldoPedido(p),0);
+  const cobrado = pedidos.reduce((a,p)=>a+sumPagosPedido(p.pedido_id),0);
+
+  box.innerHTML = `
+    <div><strong>Contacto:</strong> ${c.telefono || "-"} · ${c.email || "-"}</div>
+    <div style="margin-top:6px;">
+      <span class="tag">Pedidos con deuda: ${pedidosDeuda.length}</span>
+      <span class="tag">Cobrado: ${fmtMoney(cobrado)}</span>
+      <span class="tag">Saldo total: ${fmtMoney(deuda)}</span>
+    </div>
+    <div class="muted" style="margin-top:8px;">
+    </div>
+  `;
+
+  if(pedidosDeuda.length===0){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="7" class="muted">Este cliente no tiene deuda.</td>`;
+    tb.appendChild(tr);
+    return;
+  }
+
+  pedidosDeuda.forEach(p=>{
+    const pagado = sumPagosPedido(p.pedido_id);
+    const saldo = saldoPedido(p);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${formatDT(p.fecha_hora_entrega)}</td>
+      <td>${resumenPedido(p)}</td>
+      <td>${fmtMoney(p.total_estimado)}</td>
+      <td>${fmtMoney(pagado)}</td>
+      <td><strong>${fmtMoney(saldo)}</strong></td>
+      <td><span class="tag">${p.estado_pago}</span></td>
+      <td class="right">
+        <button class="secondary" data-pay="${p.pedido_id}">Registrar pago</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("button[data-pay]").forEach(b=>{
+    b.addEventListener("click", ()=> registrarPago(Number(b.dataset.pay)));
+  });
+}
+
+// ======= INFORMES =======
+function setInfRange(daysBack){
+  const end = new Date();
+  const start = new Date(); start.setDate(start.getDate() - daysBack);
+  const pad = (n)=>String(n).padStart(2,"0");
+  const toISO = (d)=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  $("infDesde").value = toISO(start);
+  $("infHasta").value = toISO(end);
+}
+
+function renderInformes(){
+  const desde = $("infDesde").value;
+  const hasta = $("infHasta").value;
+  if(!desde || !hasta) return;
+
+  const pedidos = state.pedidos
+    .filter(p=>p.estado!=="cancelado")
+    .filter(p=> inRange(p.fecha_hora_entrega, desde, hasta));
+
+  const pedidosN = pedidos.length;
+  const unidades = pedidos.reduce((acc,p)=> acc + p.detalles.reduce((a,d)=>a+d.cantidad,0), 0);
+  const total = pedidos.reduce((acc,p)=> acc + (Number(p.total_estimado)||0), 0);
+  const cobrado = pedidos.reduce((acc,p)=> acc + sumPagosPedido(p.pedido_id), 0);
+
+  $("infKpiPedidos").textContent = pedidosN;
+  $("infKpiUnidades").textContent = unidades;
+  $("infKpiFact").textContent = fmtMoney(total);
+  $("infKpiCob").textContent = fmtMoney(cobrado);
+
+  // top productos por unidades
+  const prodMap = new Map();
+  pedidos.forEach(p=>{
+    p.detalles.forEach(d=>{
+      prodMap.set(d.producto_id, (prodMap.get(d.producto_id)||0) + d.cantidad);
+    });
+  });
+  const prodRows = [...prodMap.entries()]
+    .map(([producto_id, unid])=>{
+      const pr = state.productos.find(x=>x.producto_id===producto_id);
+      return { nombre: pr?.nombre || "?", unid };
+    })
+    .sort((a,b)=> b.unid - a.unid)
+    .slice(0, 12);
+
+  const tbP = $("tblInfProductos");
+  tbP.innerHTML = "";
+  if(prodRows.length===0){
+    tbP.innerHTML = `<tr><td colspan="2" class="muted">Sin datos en el rango.</td></tr>`;
+  } else {
+    prodRows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.nombre}</td><td class="right"><strong>${r.unid}</strong></td>`;
+      tbP.appendChild(tr);
+    });
+  }
+
+  // top clientes por total
+  const cliMap = new Map();
+  pedidos.forEach(p=>{
+    cliMap.set(p.cliente_id, (cliMap.get(p.cliente_id)||0) + (Number(p.total_estimado)||0));
+  });
+  const cliRows = [...cliMap.entries()]
+    .map(([cliente_id, tot])=>{
+      const c = state.clientes.find(x=>x.cliente_id===cliente_id);
+      return { nombre: c?.nombre || "?", tot };
+    })
+    .sort((a,b)=> b.tot - a.tot)
+    .slice(0, 12);
+
+  const tbC = $("tblInfClientes");
+  tbC.innerHTML = "";
+  if(cliRows.length===0){
+    tbC.innerHTML = `<tr><td colspan="2" class="muted">Sin datos en el rango.</td></tr>`;
+  } else {
+    cliRows.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.nombre}</td><td class="right"><strong>${fmtMoney(r.tot)}</strong></td>`;
+      tbC.appendChild(tr);
+    });
+  }
+}
+
   $("btnGuardarPedido").addEventListener("click", guardarPedido);
 
   // ======= Crear cliente rápido =======
@@ -608,6 +1426,20 @@ $("btnWall").addEventListener("click", ()=>{
     $("clienteSel").value = nuevo.cliente_id;
     toast("Cliente creado");
   });
+
+  // CLIENTES
+$("cliSearch")?.addEventListener("input", renderClientes);
+$("cliFiltroEstado")?.addEventListener("change", renderClientes);
+
+// DEUDORES
+$("deuSearch")?.addEventListener("input", renderDeudores);
+$("deuFiltro")?.addEventListener("change", renderDeudores);
+
+// INFORMES
+$("btnInfHoy")?.addEventListener("click", ()=>{ setInfRange(0); renderInformes(); });
+$("btnInf7")?.addEventListener("click", ()=>{ setInfRange(7); renderInformes(); });
+$("btnInf30")?.addEventListener("click", ()=>{ setInfRange(30); renderInformes(); });
+$("btnInfGen")?.addEventListener("click", renderInformes);
 
   // ======= Dashboard / tablas =======
   function setEstadoPedido(pedido_id, nuevoEstado){
@@ -976,6 +1808,7 @@ $("btnWall").addEventListener("click", ()=>{
   // init
   $("todayPill").textContent = "Hoy: " + new Date().toLocaleDateString("es-UY");
   renderAll();
+  initWhatsappMock();
 
   // default entregaDT: hoy + 1h
   const def = new Date(); def.setHours(def.getHours()+1);
